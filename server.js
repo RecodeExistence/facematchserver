@@ -2,6 +2,8 @@ const express = require('express');
 const app = express(); 
 const bodyParser = require('body-parser'); 
 
+
+
 app.use(express.json()); 
 
 const database = {
@@ -51,14 +53,43 @@ app.post('/register', (req, res) => {
 			joined: new Date()
 	})
 	res.json(database.users[database.users.length-1]); 
-});   
+});
 
+//Profile route:  
+app.get('/profile/:id', (req, res) => {
+	const { id } = req.params;
+	let found = false; 
+	database.users.forEach(user => {
+		if(user.id === id) {
+			found = true; 
+			return res.json(user); 
+		} 
+	})
+	if(!found) {
+		res.status(400).json('No matching user found.');
+	}
+});
+
+
+//Image Route: increment user count.
+app.put('/image', (req, res) => {
+	const { id } = req.body;
+	let found = false; 
+	database.users.forEach(user => {
+		if(user.id === id) {
+			user.entries++;
+			return res.json(user.entries); 
+		} 
+	}) 
+		if(!found) {
+			res.status(400).json('No matching user found.');
+		}
+}); 
+
+// Fire up the server: 
 app.listen(3000, ()=> {
 	console.log('App listening on port 3000.'); 
 })
 
 
-/* API plan. 
-	/profile/: userId --> GET = return the user object. 
-	/image --> PUT --> return the updated user object/count.
- */
+

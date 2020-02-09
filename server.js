@@ -1,18 +1,21 @@
+//Imports/Requires.
 const express = require('express');
-const app = express(); 
-const bodyParser = require('body-parser'); 
+const app = express();
+const bcrypt = require('bcrypt-nodejs'); 
+const cors = require('cors');
 
-
-
+//Middleware.
 app.use(express.json()); 
+app.use(cors());
 
+//Database.  Will be shifted out to SQL. Testing only.
 const database = {
 	users: [
 		{
 			id:  '123', 
 			name: 'John', 
 			email: 'john@gmail.com', 
-			password: 'cookies', 
+			password: 'passhere!', 
 			entries: 0, 
 			joined: new Date()
 		},
@@ -21,10 +24,17 @@ const database = {
 			id:  '456', 
 			name: 'Alan', 
 			email: 'alan@gmail.com', 
-			password: 'cofee', 
+			password: 'coffee', 
 			entries: 0, 
 			joined: new Date()
 		} 
+	], 
+	login: [
+		{
+			id: '911', 
+			hash: '', 
+			email: 'user@user.com'
+		}
 	]
 }
 
@@ -35,7 +45,14 @@ app.get('/', (req, res) => {
 
 // /signin route. 
 app.post('/signin', (req, res) => {
-	(req.body.email === database.users[0].email && req.body.password === database.users[0].password) ? 
+	bcrypt.compare("coffee", '$2a$10$fI31aqdDBn/PsHYYoziJl..MIlvX.knbKs3gABnXYye7124CSycC6', function(err, res) {
+		console.log('first guess', res)
+	});
+	bcrypt.compare("veggies", '$2a$10$fI31aqdDBn/PsHYYoziJl..MIlvX.knbKs3gABnXYye7124CSycC6', function(err, res) {
+		console.log('Second guess', res);
+	});
+	
+	(req.body.email === database.users[1].email && req.body.password === database.users[1].password) ? 
 		res.json('Signin Success!') : 
 		res.status(400).json('error logging in.');  
 	
@@ -44,6 +61,11 @@ app.post('/signin', (req, res) => {
 //Register route:  
 app.post('/register', (req, res) => {
 	const { name, email, password } = req.body; 
+
+	bcrypt.hash(password, null, null, function(err, hash) {
+		console.log(`Hash: `, hash);
+	});
+
 	database.users.push({
 		id:  '456'+1, 
 		name,   
@@ -70,7 +92,6 @@ app.get('/profile/:id', (req, res) => {
 	}
 });
 
-
 //Image Route: increment user count.
 app.put('/image', (req, res) => {
 	const { id } = req.body;
@@ -89,7 +110,4 @@ app.put('/image', (req, res) => {
 // Fire up the server: 
 app.listen(3000, ()=> {
 	console.log('App listening on port 3000.'); 
-})
-
-
-
+}); 

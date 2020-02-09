@@ -53,7 +53,7 @@ app.post('/signin', (req, res) => {
 	});
 	
 	(req.body.email === database.users[1].email && req.body.password === database.users[1].password) ? 
-		res.json('Signin Success!') : 
+		res.json(database.users[1]) : 
 		res.status(400).json('error logging in.');  
 	
 });
@@ -103,7 +103,7 @@ app.put('/image', (req, res) => {
 		} 
 	}) 
 		if(!found) {
-			res.status(400).json('No matching user found.');
+			res.status(400).json('Not found.');
 		}
 }); 
 

@@ -61,20 +61,22 @@ app.post('/signin', (req, res) => {
 //Register route:  
 app.post('/register', (req, res) => {
 	const { name, email, password } = req.body; 
-
-	bcrypt.hash(password, null, null, function(err, hash) {
-		console.log(`Hash: `, hash);
-	});
-
-	database.users.push({
-		id:  '456'+1, 
-		name,   
-		email, 
-		password,
-			entries: 0, 
-			joined: new Date()
+	if(name && email && password) {	
+		bcrypt.hash(password, null, null, function(err, hash) {
+		});
+			database.users.push({
+				id:  '456'+1, 
+				name,   
+				email, 
+				password,
+				entries: 0, 
+				joined: new Date()
 	})
 	res.json(database.users[database.users.length-1]); 
+} else {
+	this.onRouteChange('register'); 
+	return res.status(400).json('register fail');
+	}
 });
 
 //Profile route:  
